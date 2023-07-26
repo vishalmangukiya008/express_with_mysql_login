@@ -7,14 +7,14 @@ let tableName = "user"
 
 
 
-function getToken(email,first_name,last_name){
-    return jwt.sign({email:email,first_name:first_name,last_name:last_name}, "crossx@123");
+function getToken(userId,email){
+    return jwt.sign({userId:userId,email:email}, "crossx@123");
 }
 
 router.post('/login',(req,res)=>{
 
     let data = req.body;
-    console.log(req.body);
+    console.log("body: "+data);
 
     data.password = sha256.x2(data.password)
 
@@ -28,7 +28,7 @@ router.post('/login',(req,res)=>{
                 });
             }else{
                 res.send({
-                    accessToken:getToken(result[0].email,result[0].first_name,result[0].last_name)
+                    accessToken:getToken(result[0].id,result[0].email)
                 });
             } 
             
@@ -50,6 +50,9 @@ router.post('/register',(req,res)=>{
         email: data.email,
         password: data.password,
     }
+
+
+    //check user is already resgiter
 
     connection.query("INSERT INTO "+tableName+" SET ?",userData, function (err, result, fields) {
         if (err){
@@ -74,5 +77,8 @@ router.post('/register',(req,res)=>{
 
 
 })
+
+
+
 
 module.exports = router;
